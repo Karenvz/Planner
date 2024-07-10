@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planner Semanal</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f3f0f7;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            color: #6a0dad;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            max-width: 800px;
+            border-collapse: collapse;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: none;
+        }
+
+        th {
+            background-color: #6a0dad;
+            color: white;
+            font-size: 1em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f7f3fc;
+        }
+
+        tr:hover {
+            background-color: #ede7f6;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        td {
+            font-size: 0.9em;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #530b8e;
+        }
+
+        #week-dates {
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #6a0dad;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            th, td {
+                padding: 8px;
+                font-size: 0.8em;
+            }
+
+            button {
+                padding: 8px 16px;
+                font-size: 0.9em;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            #week-dates {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Planner Semanal</h1>
+    <div id="week-dates"></div>
+    <table id="planner">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Dia da Semana</th>
+                <th>Caixa</th>
+                <th>Incidentes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Linhas do planner serão inseridas aqui -->
+        </tbody>
+    </table>
+    <div class="button-container">
+        <button onclick="voltarSemana()">Voltar Semana</button>
+        <button onclick="simularProximaSemana()">Próxima Semana</button>
+    </div>
+
+    <script>
+        const diasDaSemana = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+        let currentDate = new Date(2024, 6, 8); // Data inicial: 08/07/2024
+        let weekCounter = 0; // Contador de semanas
+
+        // Função para determinar quem é responsável com base no dia da semana e tipo de responsabilidade
+        function determinarResponsavel(dia, responsabilidade, semanaPar) {
+            const alternanciaPar = {
+                'Segunda': { 'Caixa': 'Karen', 'Incidentes': 'Mayara' },
+                'Terça': { 'Caixa': 'Mayara', 'Incidentes': 'Karen' },
+                'Quarta': { 'Caixa': 'Karen', 'Incidentes': 'Mayara' },
+                'Quinta': { 'Caixa': 'Mayara', 'Incidentes': 'Karen' },
+                'Sexta': { 'Caixa': 'Karen', 'Incidentes': 'Mayara' }
+            };
+
+            const alternanciaImpar = {
+                'Segunda': { 'Caixa': 'Mayara', 'Incidentes': 'Karen' },
+                'Terça': { 'Caixa': 'Karen', 'Incidentes': 'Mayara' },
+                'Quarta': { 'Caixa': 'Mayara', 'Incidentes': 'Karen' },
+                'Quinta': { 'Caixa': 'Karen', 'Incidentes': 'Mayara' },
+                'Sexta': { 'Caixa': 'Mayara', 'Incidentes': 'Karen' }
+            };
+
+            return semanaPar ? alternanciaPar[dia][responsabilidade] : alternanciaImpar[dia][responsabilidade];
+        }
+
+        // Função para criar e preencher a tabela do planner
+        function criarPlanner(startDate, semanaPar) {
+            const tbody = document.querySelector('#planner tbody');
+            tbody.innerHTML = ''; // Limpar a tabela antes de adicionar novos dados
+
+            diasDaSemana.forEach((dia, index) => {
+                const tr = document.createElement('tr');
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + index);
+
+                const tdDate = document.createElement('td');
+                tdDate.textContent = date.toLocaleDateString('pt-BR');
+                tr.appendChild(tdDate);
+
+                const tdDia = document.createElement('td');
+                tdDia.textContent = dia;
+                tr.appendChild(tdDia);
+
+                const tdCaixa = document.createElement('td');
+                tdCaixa.textContent = determinarResponsavel(dia, 'Caixa', semanaPar);
+                tr.appendChild(tdCaixa);
+
+                const tdIncidentes = document.createElement('td');
+                tdIncidentes.textContent = determinarResponsavel(dia, 'Incidentes', semanaPar);
+                tr.appendChild(tdIncidentes);
+
+                tbody.appendChild(tr);
+            });
+
+            atualizarDatasDaSemana(startDate);
+        }
+
+        // Função para atualizar as datas da semana exibida
+        function atualizarDatasDaSemana(startDate) {
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 4);
+            const weekDatesElement = document.getElementById('week-dates');
+            weekDatesElement.textContent = `Semana de ${startDate.toLocaleDateString('pt-BR')} a ${endDate.toLocaleDateString('pt-BR')}`;
+        }
+
+        // Função para simular a próxima semana
+        function simularProximaSemana() {
+            currentDate.setDate(currentDate.getDate() + 7);
+            weekCounter++;
+            criarPlanner(currentDate, weekCounter % 2 === 0);
+        }
+
+        // Função para voltar a semana anterior
+        function voltarSemana() {
+            currentDate.setDate(currentDate.getDate() - 7);
+            weekCounter--;
+            criarPlanner(currentDate, weekCounter % 2 === 0);
+        }
+
+        // Chamar a função para criar o planner quando a página carregar
+        window.onload = () => criarPlanner(currentDate, weekCounter % 2 === 0);
+    </script>
+</body>
+</html>
